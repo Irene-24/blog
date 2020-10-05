@@ -1,12 +1,12 @@
 import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
-
+import { BlogProvider } from "./src/context/blogContext";
 import IndexScreen from "./src/screens/IndexScreen";
 
 const Stack = createStackNavigator();
 
-export default function App ()
+function App ()
 {
   return (
     <NavigationContainer>
@@ -21,3 +21,13 @@ export default function App ()
     </NavigationContainer>
   );
 }
+
+
+export default () =>
+{
+  return (
+    <BlogProvider>
+      <App />
+    </BlogProvider>
+  );
+};
