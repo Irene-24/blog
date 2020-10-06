@@ -13,18 +13,31 @@ import
 
 import { Context as BlogContext } from "../context/blogContext";
 
-const IndexScreen = () =>
+const IndexScreen = ( { navigation } ) =>
 {
 
     const { state: posts, addBlogPost, delBlogPost } = useContext( BlogContext );
+
+    const goToDetails = ( item ) => 
+    {
+        navigation.navigate( 'Post',
+            {
+                title: item.title
+            } );
+
+    };
 
     const render = useCallback
         (
             ( { item } ) => (
                 <View style={ styles.Post }>
-                    <Text style={ styles.Title }>
-                        { item.title }{ item.id }
-                    </Text>
+                    <TouchableOpacity
+                        onPress={ () => goToDetails( item ) }>
+                        <Text style={ styles.Title }>
+                            { item.title }
+                        </Text>
+                    </TouchableOpacity>
+
                     <TouchableOpacity
                         onPress={ () => delBlogPost( item.id ) }
                     >
