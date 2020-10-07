@@ -22,8 +22,10 @@ const blogReducer = ( state, action ) =>
             return posts;
 
         case "edit_blogpost":
-            posts = state.filter( p => p.id !== action.payload );
+            posts = [ ...state ];
+            const index = posts.findIndex( p => p.id === action.payload.id );
 
+            posts[ index ] = { ...action.payload };
             return posts;
 
         default:
@@ -33,15 +35,20 @@ const blogReducer = ( state, action ) =>
 
 const addBlogPost = ( dispatch ) =>
 {
-    return ( { title, content } ) => dispatch(
-        {
-            type: "add_blogpost",
-            payload:
+    return ( { title, content }, cb ) => 
+    {
+        dispatch(
             {
-                title,
-                content
-            }
-        } );
+                type: "add_blogpost",
+                payload:
+                {
+                    title,
+                    content
+                }
+            } );
+
+        cb();
+    };
 };
 
 const delBlogPost = ( dispatch ) =>
@@ -51,7 +58,21 @@ const delBlogPost = ( dispatch ) =>
 
 const editBlogPost = ( dispatch ) =>
 {
-    return ( id ) => dispatch( { type: "edit_blogpost", payload: id } );
+    return ( { title, content, id }, cb ) => 
+    {
+        dispatch(
+            {
+                type: "edit_blogpost",
+                payload:
+                {
+                    id,
+                    title,
+                    content
+                }
+            } );
+
+        cb();
+    };
 };
 
 export const { Context, Provider } = createDataContext(
