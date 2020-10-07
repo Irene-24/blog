@@ -1,4 +1,4 @@
-import React, { useContext, useCallback } from 'react';
+import React, { useContext, useCallback, useLayoutEffect } from 'react';
 import { FontAwesome } from '@expo/vector-icons';
 import { TouchableOpacity } from "react-native";
 
@@ -8,56 +8,65 @@ import
     Text,
     View,
     FlatList,
-    Button,
 } from 'react-native';
 
 import { Context as BlogContext } from "../context/blogContext";
 
 const IndexScreen = ( { navigation } ) =>
 {
-
-    const { state: posts, addBlogPost, delBlogPost } = useContext( BlogContext );
+    const { state: posts, delBlogPost } = useContext( BlogContext );
 
     const goToDetails = ( item ) => 
     {
         navigation.navigate( 'Post',
             {
-                title: item.title
+                title: item.title,
+                id: item.id
             } );
-
     };
 
     const render = useCallback
         (
             ( { item } ) => (
-                <View style={ styles.Post }>
-                    <TouchableOpacity
-                        onPress={ () => goToDetails( item ) }>
+                <TouchableOpacity onPress={ () => goToDetails( item ) }>
+                    <View style={ styles.Post }>
+
                         <Text style={ styles.Title }>
                             { item.title }
                         </Text>
-                    </TouchableOpacity>
 
-                    <TouchableOpacity
-                        onPress={ () => delBlogPost( item.id ) }
-                    >
+                        <TouchableOpacity
+                            onPress={ () => delBlogPost( item.id ) }
+                        >
 
-                        <FontAwesome style={ styles.Icon } name="trash-o" size={ 24 } color="black" />
-                    </TouchableOpacity>
-                </View>
+                            <FontAwesome style={ styles.Icon } name="trash-o" size={ 24 } color="black" />
+                        </TouchableOpacity>
+                    </View>
+                </TouchableOpacity>
             ),
             [],
         );
 
+    useLayoutEffect( () =>
+    {
+        navigation.setOptions( {
+            headerRight: () => (
+                <TouchableOpacity
+                    style={ { marginRight: 20 } }
+                    onPress={ () => 
+                    {
+                        navigation.navigate( 'Create' );
+                    } }
+                >
+                    <FontAwesome name="plus" size={ 30 } color="black" />
+                </TouchableOpacity>
+
+            ),
+        } );
+    }, [ navigation ] );
 
     return (
         <View>
-            <Button
-                onPress={ addBlogPost }
-                title="Add blog post"
-                color="#841584"
-                accessibilityLabel="Add blog post"
-            />
             < FlatList
 
                 data={ posts }
@@ -68,6 +77,7 @@ const IndexScreen = ( { navigation } ) =>
         </View>
     );
 };
+
 
 const styles = StyleSheet.create(
     {

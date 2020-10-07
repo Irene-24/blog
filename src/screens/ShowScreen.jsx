@@ -1,12 +1,15 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useContext } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
+import { Context as BlogContext } from "../context/blogContext";
 
 const ShowScreen = ( { route, navigation } ) => 
 {
+    const { state: posts, editBlogPost } = useContext( BlogContext );
+
+    const blogPost = posts.find( p => p.id === route.params.id );
 
     useEffect( () =>
     {
-        console.log( route.params );
         navigation.setOptions( {
             title: route.params.title
         } );
@@ -16,8 +19,9 @@ const ShowScreen = ( { route, navigation } ) =>
     return (
         <View>
             <Text>
-                Lorem ipsum dolor sit amet, consectetur adipisicing elit. Amet perferendis officiis fugit id, dolor distinctio natus cum debitis earum reprehenderit non ipsa? Doloribus non vero fugiat temporibus odit sit aperiam.
+                { blogPost.content }
             </Text>
+
         </View>
     );
 };
