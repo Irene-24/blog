@@ -33,6 +33,8 @@ const ShowScreen = ( { route, navigation } ) =>
 
             } );
 
+
+
     }, [ navigation, route ] );
 
     return (

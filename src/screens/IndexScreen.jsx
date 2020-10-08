@@ -1,4 +1,10 @@
-import React, { useContext, useCallback, useLayoutEffect } from 'react';
+import React,
+{
+    useContext,
+    useCallback,
+    useLayoutEffect,
+    useEffect
+} from 'react';
 import { FontAwesome } from '@expo/vector-icons';
 import { TouchableOpacity } from "react-native";
 
@@ -14,7 +20,7 @@ import { Context as BlogContext } from "../context/blogContext";
 
 const IndexScreen = ( { navigation } ) =>
 {
-    const { state: posts, delBlogPost } = useContext( BlogContext );
+    const { state: posts, delBlogPost, getBlogPosts } = useContext( BlogContext );
 
     const goToDetails = ( item ) => 
     {
@@ -65,6 +71,22 @@ const IndexScreen = ( { navigation } ) =>
         } );
     }, [ navigation ] );
 
+    useEffect( () =>
+    {
+        getBlogPosts();
+
+        const listener = navigation.addListener( "focus", () => 
+        {
+            getBlogPosts();
+        } );
+
+        return () =>
+        {
+            navigation.removeListener( listener );
+        };
+
+    }, [] );
+
     return (
         <View>
             < FlatList
@@ -84,7 +106,7 @@ const styles = StyleSheet.create(
         Post:
         {
             flexDirection: "row",
-            paddingHorizontal: 10,
+            paddingHorizontal: 15,
             paddingVertical: 18,
             justifyContent: "space-between",
             borderTopWidth: 1,
@@ -96,7 +118,9 @@ const styles = StyleSheet.create(
         },
         Title:
         {
-            fontSize: 18
+            fontSize: 18,
+            textTransform: "capitalize"
+
 
         }
     } );

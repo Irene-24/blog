@@ -1,20 +1,13 @@
 import createDataContext from "./createDataContext";
+import server from "../api/jsonServer";
 
 const blogReducer = ( state, action ) =>
 {
     let posts;
     switch ( action.type )
     {
-        case "add_blogpost":
-
-            return [
-                ...state,
-                {
-                    id: Math.floor( ( Math.random() * 8999 ) + 1000 ),
-                    title: action.payload.title,
-                    content: action.payload.content
-                }
-            ];
+        case "get_blogposts":
+            return action.payload;
 
         case "delete_blogpost":
             posts = state.filter( p => p.id !== action.payload );
@@ -35,31 +28,41 @@ const blogReducer = ( state, action ) =>
 
 const addBlogPost = ( dispatch ) =>
 {
-    return ( { title, content }, cb ) => 
+    return async ( { title, content }, cb = () => { } ) => 
     {
-        dispatch(
+        await server.post( "/blogposts",
             {
-                type: "add_blogpost",
-                payload:
-                {
-                    title,
-                    content
-                }
+                title,
+                content
             } );
 
         cb();
+
     };
 };
 
 const delBlogPost = ( dispatch ) =>
 {
-    return ( id ) => dispatch( { type: "delete_blogpost", payload: id } );
+    return async ( id ) =>
+    {
+
+        await server.delete( `/blogposts/${ id }` );
+
+        dispatch( { type: "delete_blogpost", payload: id } );
+
+    };
 };
 
 const editBlogPost = ( dispatch ) =>
 {
-    return ( { title, content, id }, cb ) => 
+    return async ( { title, content, id }, cb ) => 
     {
+        await server.put( `/blogposts/${ id }`,
+            {
+                title,
+                content
+            } );
+
         dispatch(
             {
                 type: "edit_blogpost",
@@ -75,12 +78,28 @@ const editBlogPost = ( dispatch ) =>
     };
 };
 
+const getBlogPosts = ( dispatch ) =>
+{
+    return async () => 
+    {
+        const resp = await server.get( "/blogposts" );
+        const posts = resp.data;
+        dispatch(
+            {
+                type: "get_blogposts",
+                payload: posts
+            } );
+
+    };
+};
+
 export const { Context, Provider } = createDataContext(
     blogReducer,
     {
         addBlogPost,
         delBlogPost,
-        editBlogPost
+        editBlogPost,
+        getBlogPosts,
     },
     []
 );
